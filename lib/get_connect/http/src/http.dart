@@ -120,8 +120,7 @@ class GetHttpClient {
     if (body is FormData) {
       bodyBytes = await body.toBytes();
       headers['content-length'] = bodyBytes.length.toString();
-      headers['content-type'] =
-          'multipart/form-data; boundary=${body.boundary}';
+      headers['content-type'] = 'multipart/form-data; boundary=${body.boundary}';
     } else if (contentType != null &&
         contentType.toLowerCase() == 'application/x-www-form-urlencoded' &&
         body is Map) {
@@ -183,8 +182,7 @@ class GetHttpClient {
     var total = 0;
     var length = bodyBytes.length;
 
-    var byteStream =
-        Stream.fromIterable(bodyBytes.map((i) => [i])).transform<List<int>>(
+    var byteStream = Stream.fromIterable(bodyBytes.map((i) => [i])).transform<List<int>>(
       StreamTransformer.fromHandlers(handleData: (data, sink) {
         total += data.length;
         if (uploadProgress != null) {
@@ -226,8 +224,7 @@ class GetHttpClient {
     try {
       var response = await _httpClient.send<T>(newRequest);
 
-      final newResponse =
-          await _modifier.modifyResponse<T>(newRequest, response);
+      final newResponse = await _modifier.modifyResponse<T>(newRequest, response);
 
       if (HttpStatus.unauthorized == newResponse.statusCode &&
           _modifier.authenticator != null &&
@@ -257,7 +254,7 @@ class GetHttpClient {
       return newResponse;
     } on Exception catch (err) {
       if (!errorSafety) {
-        throw GetHttpException(err.toString());
+        rethrow;
       } else {
         return Response<T>(
           request: newRequest,
@@ -293,14 +290,12 @@ class GetHttpClient {
     ));
   }
 
-  ResponseInterceptor<T>? _responseInterceptor<T>(
-      ResponseInterceptor<T>? actual) {
+  ResponseInterceptor<T>? _responseInterceptor<T>(ResponseInterceptor<T>? actual) {
     if (actual != null) return actual;
     final defaultInterceptor = defaultResponseInterceptor;
     return defaultInterceptor != null
         ? (request, targetType, response) async =>
-            await defaultInterceptor(request, targetType, response)
-                as Response<T>?
+            await defaultInterceptor(request, targetType, response) as Response<T>?
         : null;
   }
 
@@ -351,9 +346,8 @@ class GetHttpClient {
       var response = await _performRequest<T>(() => Future.value(request));
       return response;
     } on Exception catch (e) {
-      if (!errorSafety) {
-        throw GetHttpException(e.toString());
-      }
+      if (!errorSafety) rethrow;
+
       return Future.value(Response<T>(
         statusText: 'Can not connect to server. Reason: $e',
       ));
@@ -387,9 +381,8 @@ class GetHttpClient {
       );
       return response;
     } on Exception catch (e) {
-      if (!errorSafety) {
-        throw GetHttpException(e.toString());
-      }
+      if (!errorSafety) rethrow;
+
       return Future.value(Response<T>(
         statusText: 'Can not connect to server. Reason: $e',
       ));
@@ -423,9 +416,8 @@ class GetHttpClient {
       );
       return response;
     } on Exception catch (e) {
-      if (!errorSafety) {
-        throw GetHttpException(e.toString());
-      }
+      if (!errorSafety) rethrow;
+
       return Future.value(Response<T>(
         statusText: 'Can not connect to server. Reason: $e',
       ));
@@ -459,9 +451,8 @@ class GetHttpClient {
       );
       return response;
     } on Exception catch (e) {
-      if (!errorSafety) {
-        throw GetHttpException(e.toString());
-      }
+      if (!errorSafety) rethrow;
+
       return Future.value(Response<T>(
         statusText: 'Can not connect to server. Reason: $e',
       ));
@@ -494,9 +485,8 @@ class GetHttpClient {
       );
       return response;
     } on Exception catch (e) {
-      if (!errorSafety) {
-        throw GetHttpException(e.toString());
-      }
+      if (!errorSafety) rethrow;
+
       return Future.value(Response<T>(
         statusText: 'Can not connect to server. Reason: $e',
       ));
@@ -518,9 +508,8 @@ class GetHttpClient {
       );
       return response;
     } on Exception catch (e) {
-      if (!errorSafety) {
-        throw GetHttpException(e.toString());
-      }
+      if (!errorSafety) rethrow;
+
       return Future.value(Response<T>(
         statusText: 'Can not connect to server. Reason: $e',
       ));
@@ -535,15 +524,13 @@ class GetHttpClient {
       ResponseInterceptor<T>? responseInterceptor}) async {
     try {
       var response = await _performRequest<T>(
-        () async =>
-            _delete<T>(url, contentType, query, decoder, responseInterceptor),
+        () async => _delete<T>(url, contentType, query, decoder, responseInterceptor),
         headers: headers,
       );
       return response;
     } on Exception catch (e) {
-      if (!errorSafety) {
-        throw GetHttpException(e.toString());
-      }
+      if (!errorSafety) rethrow;
+
       return Future.value(Response<T>(
         statusText: 'Can not connect to server. Reason: $e',
       ));

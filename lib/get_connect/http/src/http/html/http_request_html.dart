@@ -3,7 +3,6 @@ import 'dart:async';
 import 'dart:html';
 
 import '../../certificates/certificates.dart';
-import '../../exceptions/exceptions.dart';
 import '../../request/request.dart';
 import '../../response/response.dart';
 import '../interface/request_base.dart';
@@ -53,8 +52,9 @@ class HttpRequestImpl implements IClient {
       reader.onLoad.first.then((_) async {
         var bodyBytes = (reader.result as List<int>).toStream();
 
-        if (request.responseInterceptor != null)
+        if (request.responseInterceptor != null) {
           throw 'response interception not implemented for web yet!';
+        }
 
         /*
         TODO to be implemented like in http_request_io.dart
@@ -67,8 +67,7 @@ class HttpRequestImpl implements IClient {
 
         */
 
-        final stringBody =
-            await bodyBytesToString(bodyBytes, xhr.responseHeaders);
+        final stringBody = await bodyBytesToString(bodyBytes, xhr.responseHeaders);
 
         String? contentType;
 
@@ -98,7 +97,7 @@ class HttpRequestImpl implements IClient {
 
       reader.onError.first.then((error) {
         completer.completeError(
-          GetHttpException(error.toString(), request.url),
+          error,
           StackTrace.current,
         );
       });
@@ -106,10 +105,11 @@ class HttpRequestImpl implements IClient {
       reader.readAsArrayBuffer(blob);
     });
 
-    xhr.onError.first.then((_) {
+    xhr.onError.first.then((error) {
       completer.completeError(
-          GetHttpException('XMLHttpRequest error.', request.url),
-          StackTrace.current);
+        error,
+        StackTrace.current,
+      );
     });
 
     xhr.send(bytes);

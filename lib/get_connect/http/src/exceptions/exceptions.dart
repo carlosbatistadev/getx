@@ -1,14 +1,3 @@
-class GetHttpException implements Exception {
-  final String message;
-
-  final Uri? uri;
-
-  GetHttpException(this.message, [this.uri]);
-
-  @override
-  String toString() => message;
-}
-
 class GraphQLError {
   GraphQLError({this.code, this.message});
   final String? message;

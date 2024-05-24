@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io' as io;
 
 import '../../certificates/certificates.dart';
-import '../../exceptions/exceptions.dart';
 import '../../request/request.dart';
 import '../../response/response.dart';
 import '../interface/request_base.dart';
@@ -48,8 +47,7 @@ class HttpRequestImpl extends IClient {
 
       var response = timeout == null
           ? await stream.pipe(ioRequest) as io.HttpClientResponse
-          : await stream.pipe(ioRequest).timeout(timeout!)
-              as io.HttpClientResponse;
+          : await stream.pipe(ioRequest).timeout(timeout!) as io.HttpClientResponse;
 
       var headers = <String, String>{};
       response.headers.forEach((key, values) {
@@ -82,8 +80,8 @@ class HttpRequestImpl extends IClient {
     } on TimeoutException catch (_) {
       ioRequest?.abort();
       rethrow;
-    } on io.HttpException catch (error) {
-      throw GetHttpException(error.message, error.uri);
+    } on io.HttpException {
+      rethrow;
     }
   }
 
